@@ -120,7 +120,7 @@ export const HomePage = () => {
 
     const renedrProductItems = () => {
         return productData.products.map((product, index) => (
-            <ProductItems key = {product.id} product = {product} index = {index}/>
+            <ProductItems key = {index} product = {product} index = {index}/>
         ))
     };
 
