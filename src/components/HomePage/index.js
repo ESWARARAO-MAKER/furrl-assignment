@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
-import "./index.css"
+import { useEffect, useState, useCallback } from "react";
+import "./index.css";
 import axios from "axios";
 import { LoadingSpinner } from "../Loading";
 import { CategoryFilters } from "../CategoryFilters";
 import { ProductItems } from "../ProductItems";
 
-
 const initial_state = {
-    page : 0,
-    pageSize : 10,
-    totalPages : 10,
-    totalProducts : 0,
-    products : [],
+    page: 0,
+    pageSize: 10,
+    totalPages: 10,
+    totalProducts: 0,
+    products: [],
 };
 
 export const HomePage = () => {
@@ -23,23 +22,23 @@ export const HomePage = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 20){
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 20) {
                 if (!hasReachedEnd) setHasReachedEnd(true);
             }
         };
         const handleResize = () => {
-            if (window.innerWidth > 768){
+            if (window.innerWidth > 768) {
                 window.location.href = "https://info.furrl.in/";
             }
         }
-        
+
         window.addEventListener('scroll', handleScroll);
         window.addEventListener('resize', handleResize);
 
-        if (window.innerWidth > 768){
+        if (window.innerWidth > 768) {
             window.location.href = "https://info.furrl.in/";
         }
-        
+
         return () => {
             window.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", handleResize);
@@ -49,107 +48,101 @@ export const HomePage = () => {
     const handleFilterChange = (filter) => {
         setProductData(initial_state);
         setActiveFilter(filter);
-        setHasReachedEnd(false)
+        setHasReachedEnd(false);
     };
 
-    const fetchProductsData = async (page, activeFilter) => {
-        if (page < productData.totalPages){
-            setIsLoading(true)
+    const fetchProductsData = useCallback(async (page, activeFilter) => {
+        if (page < productData.totalPages) {
+            setIsLoading(true);
 
             const url = 'https://api.furrl.in/api/v2/listing/getListingProducts';
             const requestBody = {
-                input : {
-                    page : page + 1,
-                    pageSize : productData.pageSize,
-                    filters : activeFilter ? {id: activeFilter.uniqueId, type : activeFilter.contentType} : [],
-                    id : "#HomeHunts",
-                    entity : 'vibe',
+                input: {
+                    page: page + 1,
+                    pageSize: productData.pageSize,
+                    filters: activeFilter ? { id: activeFilter.uniqueId, type: activeFilter.contentType } : [],
+                    id: "#HomeHunts",
+                    entity: 'vibe',
                 }
             }
 
-            try{
+            try {
                 const response = await axios.post(url, requestBody);
                 const data = response.data;
                 setProductData(prevData => ({
                     ...data.data.getListingProducts,
-                    products : [...prevData.products, ...data.data.getListingProducts.products],
-                    page : page + 1,
-                }))
-                setHasReachedEnd(false)
-            }
-            catch(err){
-                console.log(err)
-            }
-            finally{
+                    products: [...prevData.products, ...data.data.getListingProducts.products],
+                    page: page + 1,
+                }));
+                setHasReachedEnd(false);
+            } catch (err) {
+                console.log(err);
+            } finally {
                 setIsLoading(false);
             }
         }
-    }
+    }, [productData.totalPages, productData.pageSize]);
 
-    const fetchFilterOptions = async () => {
+    const fetchFilterOptions = useCallback(async () => {
         const url = 'https://api.furrl.in/api/v2/listing/getListingFilters';
         const requestBody = {
-            id : "#HomeHunts",
+            id: "#HomeHunts",
             entity: "vibe",
         };
 
-        try{
+        try {
             const response = await axios.post(url, requestBody);
             const data = response.data;
             setFilterOptions(data.data.getListingFilters.easyFilters);
+        } catch (err) {
+            console.log(err);
         }
-        catch(err){
-            console.log(err)
-        }
-    }
-
-    useEffect(()=> {
-        fetchFilterOptions();
     }, []);
-    
+
+    useEffect(() => {
+        fetchFilterOptions();
+    }, [fetchFilterOptions]);
+
     useEffect(() => {
         setProductData(initial_state);
         fetchProductsData(0, activeFilter);
-    },[activeFilter])
+    }, [activeFilter, fetchProductsData]);
 
-    useEffect(()=>{
-        if (hasReachedEnd){
-            fetchProductsData(productData.page, activeFilter)
+    useEffect(() => {
+        if (hasReachedEnd) {
+            fetchProductsData(productData.page, activeFilter);
         }
-    },[hasReachedEnd, productData.page, activeFilter])
+    }, [hasReachedEnd, productData.page, activeFilter, fetchProductsData]);
 
-    const renedrProductItems = () => {
+    const renderProductItems = () => {
         return productData.products.map((product, index) => (
-            <ProductItems key = {index} product = {product} index = {index}/>
-        ))
+            <ProductItems key={`${product.id}-${index}`} product={product} index={index} />
+        ));
     };
 
     return (
         <>
             <div className="banner">
-                <h2 className="banner-heading">#HomeHunts</h2>   
+                <h2 className="banner-heading">#HomeHunts</h2>
             </div>
             <div className="products-wrapper">
                 <p className="title">
-                    {/* <span className="dot"></span> */}
                     <span className="count">{productData.totalProducts} Products</span>
                 </p>
                 <ul className="filter-tabs">
                     <li onClick={() => handleFilterChange(null)} className={`tab ${activeFilter === null ? 'active-tab' : ''}`}>All</li>
-                    {
-                        filterOptions.map(option => (
-                            <CategoryFilters key = {option.uniqueId}
-                                item = {option} 
-                                className = "tab"
-                                activeFilter = {activeFilter}
-                                activeFilterChange = {handleFilterChange}
-                            />
-                        ))
-                    }
+                    {filterOptions.map(option => (
+                        <CategoryFilters key={option.uniqueId}
+                            item={option}
+                            className="tab"
+                            activeFilter={activeFilter}
+                            activeFilterChange={handleFilterChange}
+                        />
+                    ))}
                 </ul>
             </div>
-            <ul className="products-list">{renedrProductItems()}</ul>
-            {isLoading && <LoadingSpinner/>}
+            <ul className="products-list">{renderProductItems()}</ul>
+            {isLoading && <LoadingSpinner />}
         </>
-    )
-}
+    );
+};
