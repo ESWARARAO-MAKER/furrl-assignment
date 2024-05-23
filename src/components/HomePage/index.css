@@ -1,0 +1,85 @@
+@media only screen and (max-width : 768px){
+    *{
+        box-sizing: border-box;
+    }
+    .banner{
+        background-image: url("https://cdn.furrl.in/vibes/VibeCard_HomeHunts.jpg");
+        background-size: cover;
+        width: 100vw;
+        height: 27vh;
+        max-height: 220px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+    }
+    .banner-heading{
+        color: #fff;
+        font-weight: 400;
+        font-style: italic;
+        font-size: 26px;
+        letter-spacing: 1px;
+        filter: drop-shadow(4px 4px 4px #000);
+        margin-bottom: 10px;
+    }
+    .products-wrapper{
+        padding: 10px;
+        padding-top: 5px;
+    }
+    .title{
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .dot{
+        color: gray;
+        height: 2px;
+        width: 2px;
+        border: 1px solid gray;
+        background-color: gray;
+        border-radius: 50%;
+    }
+    .count{
+        color: gray;
+    }
+    .filter-tabs{
+        list-style: none;
+        display: flex;
+        overflow-x: scroll;
+        scrollbar-width: none;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0;
+        margin: 10px 0;
+    }
+    li{
+        display: list-item;
+    }
+    .active-tab{
+        background-color: #7e59e7;
+        border: none;
+        color: #fff;
+    }
+    .tab{
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 400;
+        margin-right: 8px;
+        box-sizing: border-box;
+        padding: 4px 10px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .tab{
+        border: 1px solid #d2d0d0;
+        color: #000;
+    }
+    .products-list{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        list-style-type: none;
+        margin: 0px;
+        padding: 4px;
+    }
+}
