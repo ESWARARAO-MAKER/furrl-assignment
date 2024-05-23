@@ -24,13 +24,16 @@
     .share-icon{
         background-color: hsla(0, 2%, 9%, .671);
         border-radius: 32px;
-        columns: #fff;
+        color: #fff;
         height: 32px;
         padding: 0;
         position: absolute;
         right: 10px;
         top: 55%;
         width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .vendor-name{
         color: #64748b;
